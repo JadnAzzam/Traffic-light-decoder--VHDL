@@ -1,0 +1,35 @@
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity Timer_signal is
+    Port ( TSin : in STD_LOGIC;
+           RESET : in STD_LOGIC;
+           TSout : out STD_LOGIC);
+end Timer_signal;
+
+architecture Behavioral of Timer_signal is
+signal counter: integer := 0;
+
+begin
+process(TSin, RESET)
+begin
+
+    if (RESET = '1') then counter <= 0; TSout <= '1' ;
+    elsif (TSin'event and TSin = '1') then counter <= counter+1;
+    if (counter = 4) then TSout <= '0';
+        elsif (counter = 5) then counter <= 0; TSout <= '1';
+       end if;
+    end if;
+    
+end process;
+end Behavioral;
