@@ -1,0 +1,80 @@
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity FSM_coding is
+    Port ( clk : in STD_LOGIC;
+           TS : in STD_LOGIC;
+           sensor : in STD_LOGIC;
+           reset : in STD_LOGIC;
+           state_out : out STD_LOGIC_VECTOR (1 downto 0));
+end FSM_coding;
+
+architecture Behavioral of FSM_coding is
+
+type mystate is (GR,YR,RG,RY);
+signal current_state: mystate:= GR;
+signal next_state: mystate:=GR;
+
+begin
+
+seq: process (clk,reset)
+begin 
+    if (reset='1') then current_state <= GR;
+    elsif (clk'event and clk='1') then
+        current_state <= next_state;
+    end if;
+end process seq;
+
+comb: process (current_state,sensor,TS)
+begin
+    case current_state is 
+        when GR => 
+            if (TS='0' and sensor='1')
+                then next_state <= YR;
+                state_out <= "01";
+            else next_state <= GR;
+                state_out <= "00";
+            end if;
+        when YR => 
+            if (TS='1')
+                then next_state <= RG;
+                state_out <= "10";
+            else next_state <= YR;
+                state_out <= "01";
+            end if;
+        when RG => 
+            if (TS='0')
+                then next_state <= RY;
+                state_out <= "11";
+            else next_state <= RG;
+                state_out <= "10";
+            end if;
+        when RY => 
+            if (TS='1')
+                then next_state <= GR;
+                state_out <= "00";
+            else next_state <= RY;
+                state_out <= "11";
+            end if;
+    end case;
+end process;
+end Behavioral;
+
+
+
+
+
+
+
+
