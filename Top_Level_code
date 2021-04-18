@@ -1,0 +1,63 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+ 
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--USE ieee.numeric_std.ALL;
+ 
+ENTITY top_level IS
+Port ( top_clk : in STD_LOGIC;
+       top_sensor : in STD_LOGIC;
+       top_reset : in STD_LOGIC;
+       top_triLED1 : out STD_LOGIC_VECTOR (2 downto 0);
+       top_triLED2 : out STD_LOGIC_VECTOR (2 downto 0));
+         
+END top_level;
+ 
+ARCHITECTURE Structural OF top_level IS 
+ 
+    -- Component Declaration for the Unit Under Test (UUT)
+ 
+COMPONENT clock_divider
+    PORT(clkin: in std_logic;
+         reset: in std_logic;
+         clkout: out std_logic);
+    END COMPONENT;
+
+COMPONENT Timer_signal
+    PORT(TSin : in STD_LOGIC;
+           RESET : in STD_LOGIC;
+           TSout : out STD_LOGIC
+        );
+    END COMPONENT;
+    
+COMPONENT FSM_coding
+        PORT(clk : in STD_LOGIC;
+           TS : in STD_LOGIC;
+           sensor : in STD_LOGIC;
+           reset : in STD_LOGIC;
+           state_out : out STD_LOGIC_VECTOR (1 downto 0)
+            );
+        END COMPONENT;
+
+COMPONENT decoder
+        PORT(state_in : in STD_LOGIC_VECTOR (1 downto 0);
+           TriLED1 : out STD_LOGIC_VECTOR (2 downto 0);
+           TriLED2 : out STD_LOGIC_VECTOR (2 downto 0)
+            );
+        END COMPONENT;
+        
+
+   signal S1 : std_logic;
+   signal S2 : std_logic;
+   signal S3 : std_logic_vector(1 downto 0);
+
+  
+ 
+Begin
+U1: clock_divider port map(top_clk,top_reset,S1);
+U2: Timer_signal port map(S1,top_reset,S2);
+U3: FSM_coding port map(top_clk,S2,top_sensor,top_reset,S3);
+U4: decoder port map(S3,top_triLED1,top_triLED2);
+
+end Structural;
